@@ -13,8 +13,42 @@ datasource db {
 }
 
 model User {
-  id             String    @id @default(uuid())
-  wallet_address String    @unique @db.VarChar(42)
-  created_at     DateTime  @default(now()) @db.Timestamptz
-  updated_at     DateTime  @default(now()) @db.Timestamptz
+  id                  String             @id @default(uuid())
+  wallet_address      String             @unique @db.VarChar(42)
+  created_at          DateTime           @default(now()) @db.Timestamptz
+  updated_at          DateTime           @default(now()) @db.Timestamptz
+  scaffold_sessions   ScaffoldSession[]
+  profiler_sessions   ProfilerSession[]
+}
+
+model ScaffoldSession {
+  id              String   @id @default(uuid())
+  user_id         String?  @map("user_id")
+  config          Json     @db.JsonB
+  contract_name   String   @db.VarChar(100)
+  contract_type   String   @db.VarChar(50)
+  oz_version      String   @default("5.x") @db.VarChar(10)
+  warnings        Json?    @db.JsonB
+  errors          Json?    @db.JsonB
+  compile_success Boolean  @default(false)
+  created_at      DateTime @default(now()) @db.Timestamptz
+
+  user User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id], map: "idx_scaffold_user")
+  @@map("scaffold_sessions")
+}
+
+model ProfilerSession {
+  id               String   @id @default(uuid())
+  user_id          String?  @map("user_id")
+  contract_address String   @db.VarChar(42)
+  network          String   @default("polkadot-hub-testnet") @db.VarChar(50)
+  abi              Json     @db.JsonB
+  created_at       DateTime @default(now()) @db.Timestamptz
+
+  user User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([contract_address], map: "idx_profiler_address")
+  @@map("profiler_sessions")
 }
