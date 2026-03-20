@@ -40,3 +40,4 @@ next-env.d.ts
 # local docs/private planning (do not publish)
 RESEARCH.md
 memory-bank/
+/pvmforge/

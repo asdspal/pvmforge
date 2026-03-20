@@ -102,8 +102,8 @@ export default function ScaffoldPage() {
           <div className="lg:col-span-3">
             {result && (
               <>
-                {result.issues.length > 0 && (
-                  <WarningBanner issues={result.issues} />
+                {(result.issues ?? []).length > 0 && (
+                  <WarningBanner issues={result.issues ?? []} />
                 )}
 
                 <OutputPanel
