@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  kitchensink:
+    image: parity/polkadot:latest
+    container_name: polkadot-kitchensink
+    ports:
+      - "9944:9944"  # Polkadot SDK RPC (WebSocket)
+      - "9933:9933"  # Polkadot SDK RPC (HTTP)
+      - "8545:8545"  # ETH-RPC adapter
+      - "9615:9615"  # Prometheus metrics
+    command: --dev --rpc-external --rpc-cors=all
+    restart: unless-stopped

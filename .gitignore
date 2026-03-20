@@ -36,3 +36,7 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# local docs/private planning (do not publish)
+RESEARCH.md
+memory-bank/

@@ -8,7 +8,9 @@ import { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import { redis, getCache, setCache } from '@/lib/cache';
 
-describe('POST /api/v1/scaffold', () => {
+const describeScaffoldIntegration = process.env.RUN_DB_INTEGRATION_TESTS === 'true' ? describe : describe.skip;
+
+describeScaffoldIntegration('POST /api/v1/scaffold', () => {
   const validConfig = {
     contractType: 'ERC20',
     name: 'TestToken',
