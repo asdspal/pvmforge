@@ -70,7 +70,58 @@ interface GenericTransaction {
  *
  * @throws Error if RPC call fails or response is malformed
  */
+/**
+ * Get weight estimate from ReviveApi using contract address and calldata
+ * Simplified wrapper for profiler engine - builds transaction internally
+ *
+ * @param contractAddress - The contract address to call
+ * @param calldata - The encoded function call data
+ * @returns Weight result with ref_time, proof_size, and storage_deposit
+ *
+ * @throws Error if RPC call fails or response is malformed
+ */
 export async function getReviveWeight(
+  contractAddress: `0x${string}`,
+  calldata: `0x${string}`
+): Promise<ReviveWeightResult> {
+  // Build a GenericTransaction for the call
+  const transaction: GenericTransaction = {
+    from: '0x0000000000000000000000000000000000000000', // Zero address for estimation
+    to: contractAddress,
+    value: '0x0',
+    data: calldata,
+  };
+
+  // Build SCALE-encoded params for ReviveApi_eth_transact_with_config
+  const params = encodeReviveTransactParams(transaction);
+
+  // Call the ReviveApi using the exact method from RESEARCH.md
+  const result = await pvmClient.request({
+    method: 'state_call' as never,
+    params: ['ReviveApi_eth_transact_with_config', params] as never,
+  }) as unknown as ReviveApiEthTransactInfo;
+
+  // Parse and return the weight result
+  // This MUST return real ref_time, proof_size, storage_deposit
+  // DO NOT substitute with multipliers
+  return {
+    ref_time: BigInt(result.weight_required.ref_time),
+    proof_size: BigInt(result.weight_required.proof_size),
+    storage_deposit: BigInt(result.storage_deposit),
+  };
+}
+
+/**
+ * Get weight estimate from ReviveApi with full transaction object
+ * Advanced usage - allows custom from address and config
+ *
+ * @param transaction - The transaction to estimate weight for
+ * @param config - Optional dry run configuration
+ * @returns Weight result with ref_time, proof_size, and storage_deposit
+ *
+ * @throws Error if RPC call fails or response is malformed
+ */
+export async function getReviveWeightWithConfig(
   transaction: GenericTransaction,
   config?: DryRunConfig
 ): Promise<ReviveWeightResult> {
@@ -79,10 +130,10 @@ export async function getReviveWeight(
   const params = encodeReviveTransactParams(transaction, config);
 
   // Call the ReviveApi using the exact method from RESEARCH.md
-  const result = await pvmClient.request<ReviveApiEthTransactInfo>({
+  const result = await pvmClient.request({
     method: 'state_call' as never,
     params: ['ReviveApi_eth_transact_with_config', params] as never,
-  });
+  }) as unknown as ReviveApiEthTransactInfo;
 
   // Parse and return the weight result
   // This MUST return real ref_time, proof_size, storage_deposit
