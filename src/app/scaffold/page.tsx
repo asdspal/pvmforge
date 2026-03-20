@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { ConfigForm } from '@/components/scaffold/ConfigForm';
 import { OutputPanel } from '@/components/scaffold/OutputPanel';
 import { WarningBanner } from '@/components/scaffold/WarningBanner';
+import { downloadScaffoldZip } from '@/lib/utils/download';
 import type { ScaffoldConfig, ScaffoldResult } from '@/lib/scaffold/types';
 
 export default function ScaffoldPage() {
@@ -46,9 +47,9 @@ export default function ScaffoldPage() {
     if (!result) return;
     
     const content = result.files[activeTab];
-    const filename = activeTab === 'contract' 
+    const filename = activeTab === 'contract'
       ? `${result.files.contract.match(/contract\s+(\w+)/)?.[1] || 'contract'}.sol`
-      : activeTab === 'hardhatConfig' 
+      : activeTab === 'hardhatConfig'
         ? 'hardhat.config.ts'
         : activeTab === 'deployScript'
           ? 'deploy.ts'
@@ -61,6 +62,21 @@ export default function ScaffoldPage() {
     a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadZip = async () => {
+    if (!result) return;
+
+    // Extract contract name from the contract file
+    const contractNameMatch = result.files.contract.match(/contract\s+(\w+)/);
+    const contractName = contractNameMatch?.[1] || 'MyContract';
+
+    await downloadScaffoldZip(contractName, {
+      contract: result.files.contract,
+      hardhatConfig: result.files.hardhatConfig,
+      deployScript: result.files.deployScript,
+      readme: result.files.readme,
+    });
   };
 
   return (
@@ -96,6 +112,7 @@ export default function ScaffoldPage() {
                   onTabChange={setActiveTab}
                   onCopy={handleCopy}
                   onDownload={handleDownload}
+                  onDownloadZip={handleDownloadZip}
                 />
               </>
             )}

@@ -1,13 +1,14 @@
-import { Download, Copy, Check } from 'lucide-react';
+import { Download, Copy, Check, FileArchive } from 'lucide-react';
 import { useState } from 'react';
 
 interface ActionBarProps {
   onCopy: () => void;
   onDownload: () => void;
+  onDownloadZip?: () => void;
   disabled?: boolean;
 }
 
-export function ActionBar({ onCopy, onDownload, disabled = false }: ActionBarProps) {
+export function ActionBar({ onCopy, onDownload, onDownloadZip, disabled = false }: ActionBarProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -43,6 +44,16 @@ export function ActionBar({ onCopy, onDownload, disabled = false }: ActionBarPro
         <Download className="w-4 h-4" />
         Download
       </button>
+      {onDownloadZip && (
+        <button
+          onClick={onDownloadZip}
+          disabled={disabled}
+          className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          <FileArchive className="w-4 h-4" />
+          Download ZIP
+        </button>
+      )}
       <div className="flex-1" />
       <span className="text-xs text-gray-500">
         {disabled ? 'No content' : 'Ready'}

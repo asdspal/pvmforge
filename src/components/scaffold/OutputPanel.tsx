@@ -14,6 +14,7 @@ interface OutputPanelProps {
   onTabChange: (tab: 'contract' | 'hardhatConfig' | 'deployScript' | 'readme') => void;
   onCopy: () => void;
   onDownload: () => void;
+  onDownloadZip?: () => void;
 }
 
 const TABS = [
@@ -23,7 +24,7 @@ const TABS = [
   { id: 'readme' as const, label: 'README', language: 'markdown' },
 ];
 
-export function OutputPanel({ result, activeTab, onTabChange, onCopy, onDownload }: OutputPanelProps) {
+export function OutputPanel({ result, activeTab, onTabChange, onCopy, onDownload, onDownloadZip }: OutputPanelProps) {
   const [editorHeight, setEditorHeight] = useState(500);
 
   const currentTab = TABS.find(t => t.id === activeTab);
@@ -52,7 +53,7 @@ export function OutputPanel({ result, activeTab, onTabChange, onCopy, onDownload
 
       {/* Editor */}
       <div className="relative">
-        <ActionBar onCopy={onCopy} onDownload={onDownload} />
+        <ActionBar onCopy={onCopy} onDownload={onDownload} onDownloadZip={onDownloadZip} />
         <div style={{ height: `${editorHeight}px` }}>
           {currentTab && (
             <Editor
