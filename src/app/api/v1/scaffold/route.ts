@@ -19,6 +19,7 @@ export const maxDuration = 60;
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { Prisma } from '@/generated/prisma/client';
 import { generateSolidity } from '@/lib/scaffold/oz-wrapper';
 import { applyPVMPostProcess } from '@/lib/scaffold/pvm-postprocessor';
 import { analyzePVMCompatibility } from '@/lib/scaffold/analyzer';
@@ -115,12 +116,12 @@ export async function POST(req: NextRequest) {
     // 7. Persist session (user_id optional until auth is implemented)
     const session = await db.scaffoldSession.create({
       data: {
-        config: config as unknown as Record<string, unknown>,
+        config: config as unknown as Prisma.InputJsonValue,
         contract_name: config.name,
         contract_type: config.contractType,
         oz_version: '5.x',
-        warnings: issues.filter(i => i.severity === 'warning') as unknown as Record<string, unknown>[],
-        errors: [] as unknown as Record<string, unknown>[],
+        warnings: issues.filter(i => i.severity === 'warning') as unknown as Prisma.InputJsonValue,
+        errors: [] as unknown as Prisma.InputJsonValue,
         compile_success: true,
       },
     });

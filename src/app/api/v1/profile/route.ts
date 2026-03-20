@@ -16,6 +16,7 @@ export const maxDuration = 60;
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { Prisma } from '@/generated/prisma/client';
 import { db } from '@/lib/db';
 import { profileAllFunctions, type ProfileResult } from '@/lib/profiler/engine';
 import { evmClient } from '@/lib/rpc/evm-client';
@@ -108,7 +109,7 @@ export async function POST(req: NextRequest) {
       data: {
         contract_address: contractAddress,
         network,
-        abi: abi as Record<string, unknown>,
+        abi: abi as Prisma.InputJsonValue,
       },
     });
 
@@ -150,7 +151,7 @@ export async function POST(req: NextRequest) {
             proof_size: result.proof_size,
             storage_deposit: result.storage_deposit,
             evm_gas_estimate: result.evm_gas_estimate,
-            raw_response: result.raw_response as Record<string, unknown>,
+            raw_response: result.raw_response as Prisma.InputJsonValue,
           },
         })
       )
@@ -190,4 +191,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
