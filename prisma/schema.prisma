@@ -69,3 +69,17 @@ model WeightResult {
   @@index([session_id], map: "idx_weight_session")
   @@map("weight_results")
 }
+
+model PublicBenchmark {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contract_type  String   @db.VarChar(50)
+  function_name  String   @db.VarChar(100)
+  avg_ref_time   BigInt?
+  avg_proof_size BigInt?
+  avg_evm_gas    BigInt?
+  sample_count   Int      @default(1)
+  last_updated   DateTime @default(now()) @db.Timestamptz
+
+  @@index([contract_type, function_name], map: "idx_benchmarks_type")
+  @@map("public_benchmarks")
+}
